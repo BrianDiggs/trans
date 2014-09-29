@@ -27,7 +27,11 @@ pretty_breaks()(range(Time))
 
     times_trans <- function() {
         fmt <- function(x) {
-            format(x, simplify = !any(diff(x) < 1/(24*60)))
+            notone <- x != 1
+            simplify <- !any(diff(x) < 1/(24*60))
+            ifelse(notone,
+                   format(x-floor(x), simplify=simplify),
+                   ifelse(simplify, "24:00", "24:00:00"))
         }
         trans_new("chrontimes",
                   transform = as.numeric,
@@ -54,7 +58,13 @@ ggsave("trans_scale.png", width = 6, height = 6)
     timesreverse_trans <- function() {
         trans <- function(x) {-as.numeric(x)}
         inv <- function(x) {times(-x)}
-        fmt <- function(x) {format(x, simplify = !any(diff(x) < 1/(24*60)))}
+        fmt <- function(x) {
+            notone <- x != 1
+            simplify <- !any(diff(x) < 1/(24*60))
+            ifelse(notone,
+                   format(x-floor(x), simplify=simplify),
+                   ifelse(simplify, "24:00", "24:00:00"))
+        }
         trans_new("chrontimes-reverse",
                   transform = trans,
                   inverse = inv,
